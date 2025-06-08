@@ -30,7 +30,7 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
   }
   
   if (adminOnly && user?.role !== 'ADMIN') {
-    return <Navigate to="/" replace />
+    return <Navigate to="/\" replace />
   }
   
   return children
@@ -139,7 +139,7 @@ function App() {
             />
             
             {/* 404 Route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/\" replace />} />
           </Routes>
         </Suspense>
       </Layout>
