@@ -1,0 +1,82 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                 Int      @id @default(autoincrement())
+  username           String   @unique
+  email              String   @unique
+  password           String
+  role               String   @default("USER")
+  resetToken         String?
+  resetTokenExpiry   DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Category {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  description String?
+  trainings   Training[]
+}
+
+model Training {
+  id                 Int                @id @default(autoincrement())
+  title              String
+  description        String?            @db.Text
+  details            String?            @db.Text
+  duration           Int?
+  instructor         String?
+  start_date         DateTime?
+  end_date           DateTime?
+  fee                Decimal?           @db.Decimal(10, 2)
+  original_fee       Decimal?           @db.Decimal(10, 2)
+  discount_percentage Int?
+  level              String?
+  is_certified       Boolean?
+  what_you_will_learn Json?
+  address            String?
+  category_id        Int?
+  category           Category?          @relation(fields: [category_id], references: [id])
+  training_schedules TrainingSchedule[]
+  reviews            Review[]
+}
+
+model TrainingSchedule {
+  id            Int         @id @default(autoincrement())
+  training_id   Int
+  training      Training    @relation(fields: [training_id], references: [id])
+  start_date    DateTime?
+  end_date      DateTime?
+  capacity      Int?
+  enrollments   Enrollment[]
+}
+
+model Enrollment {
+  id                    Int               @id @default(autoincrement())
+  fullname              String
+  email                 String
+  phone                 String
+  address               String?
+  training_schedule_id  Int
+  training_schedule     TrainingSchedule  @relation(fields: [training_schedule_id], references: [id])
+  enrollment_date       DateTime          @default(now())
+  status                String            @default("active")
+}
+
+model Review {
+  id            Int       @id @default(autoincrement())
+  training_id   Int
+  training      Training  @relation(fields: [training_id], references: [id])
+  user_email    String
+  user_phone    String
+  stars         Int       @db.TinyInt
+  description   String?
+  created_at    DateTime  @default(now())
+}
